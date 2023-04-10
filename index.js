@@ -20,6 +20,10 @@ const puppeteerOptimizerMiddleware = (req) => {
   }
 }
 
+const parseMoney = (str = '') => {
+  return Number(str.replace(/[^0-9.-]+/g,"")) || 0;
+}
+
 app.get('/health', async (req, res) => {
   res.status(200).send({ status: 'ok' });
 })
@@ -52,7 +56,7 @@ app.get('/fetch-rates', async (req, res) => {
 
       buyContent.forEach(eachRow => {
         const name = eachRow.querySelector('.bc-inner-block-left-text')?.textContent?.trim();
-        const buy = eachRow.querySelector('span.green-date')?.textContent?.trim()?.split(" so'm")[0] ?? 0;
+        const buy = parseMoney(eachRow.querySelector('span.green-date')?.textContent);
 
         result.push({
           name,
@@ -62,7 +66,7 @@ app.get('/fetch-rates', async (req, res) => {
 
       sellContent.forEach(eachRow => {
         const name = eachRow.querySelector('.bc-inner-block-left-text')?.textContent?.trim();
-        const sell = eachRow.querySelector('span.green-date')?.textContent?.trim()?.split(" so'm")[0] ?? 0;
+        const sell = parseMoney(eachRow.querySelector('span.green-date')?.textContent);
 
         result = result.map(el => {
           if(el.name === name){
